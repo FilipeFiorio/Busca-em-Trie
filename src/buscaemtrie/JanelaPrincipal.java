@@ -1,41 +1,34 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package buscaemtrie;
 
-import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import java.awt.Color;
 import javax.swing.DefaultListModel;
-import javax.swing.text.AttributeSet;
+import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
-/**
- *
- * @author bv110309
- */
 public class JanelaPrincipal extends javax.swing.JFrame {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(JanelaPrincipal.class.getName());
+
+    //private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(JanelaPrincipal.class.getName());
 
     /**
      * Creates new form JanelaPrincipal
      */
     public JanelaPrincipal() {
-        
+
         initComponents();
-        
-        listResultado.setModel( new DefaultListModel<String>() );
-        
-        textPaneTexto.setText( "" );
+
+        listResultado.setModel(new DefaultListModel<String>());
+
+        textPaneTexto.setText("");
         adicionarTextoFormatado(
-            "by sea sells she shells shore the by by shore she she sea ball pen chair",
-            Color.BLACK, false, false
+                "by sea sells she shells shore the by by shore she she sea ball pen chair",
+                Color.BLACK, false, false
         );
         
-        
+        btnBuscar.setBackground(new Color(40, 20, 200, 120));
+
     }
 
     /**
@@ -98,7 +91,7 @@ public class JanelaPrincipal extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnBuscar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrollPaneResultado, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
+                .addComponent(scrollPaneResultado)
                 .addContainerGap())
         );
 
@@ -116,10 +109,11 @@ public class JanelaPrincipal extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(painelPesquisa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(scrollPaneTexto))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(scrollPaneTexto, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE))
+                    .addComponent(painelPesquisa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -128,54 +122,61 @@ public class JanelaPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        
-        // como obter o conteúdo de uma caixa de texto:
-        // getText(), retorna o conteúdo do JTextField como String
-        // trim(), remove espaços nas extremidades, retornando uma nova String
-        String valor = txtBuscarPor.getText().trim();
-        System.out.println( valor );
-        
-        // cria um item (como String) de exemplo
-        String itemLista = String.format( 
-            "%s: linha %d, coluna %d", 
-            valor,
-            1, 
-            10
-        );
-        
-        // obtém o modelo da lista, limpa e adiciona um item
-        DefaultListModel<String> model = (DefaultListModel<String>) listResultado.getModel();
-        model.clear();
-        model.addElement( itemLista );
-        
-        // adiciona texto formatado ao JTextPane
-        adicionarTextoFormatado( valor, Color.BLUE, true, true );
-        
-        
+
+        SwingUtilities.invokeLater(() -> {
+
+            new Thread(() -> {
+                
+                // como obter o conteúdo de uma caixa de texto:
+                // getText(), retorna o conteúdo do JTextField como String
+                // trim(), remove espaços nas extremidades, retornando uma nova String
+                String valor = txtBuscarPor.getText().trim();
+                System.out.println(valor);
+
+                // cria um item (como String) de exemplo
+                String itemLista = String.format(
+                        "%s: linha %d, coluna %d",
+                        valor,
+                        1,
+                        10
+                );
+
+                // obtém o modelo da lista, limpa e adiciona um item
+                DefaultListModel<String> model = (DefaultListModel<String>) listResultado.getModel();
+                model.clear();
+                model.addElement(itemLista);
+
+                // adiciona texto formatado ao JTextPane
+                adicionarTextoFormatado(valor, Color.BLUE, true, true);
+
+            }).start();
+        });
+
+
     }//GEN-LAST:event_btnBuscarActionPerformed
 
-    private void adicionarTextoFormatado( String texto, Color cor, boolean italico, boolean negrito ) {
-        
+    private void adicionarTextoFormatado(String texto, Color cor, boolean italico, boolean negrito) {
+
         try {
-            
+
             SimpleAttributeSet as = new SimpleAttributeSet();
-            StyleConstants.setForeground( as, cor );
-            StyleConstants.setBold( as, negrito );
-            StyleConstants.setItalic( as, italico );
-            
-            textPaneTexto.getDocument().insertString( textPaneTexto.getDocument().getLength(), texto, as );
-            
-        } catch ( BadLocationException exc ) {
+            StyleConstants.setForeground(as, cor);
+            StyleConstants.setBold(as, negrito);
+            StyleConstants.setItalic(as, italico);
+
+            textPaneTexto.getDocument().insertString(textPaneTexto.getDocument().getLength(), texto, as);
+
+        } catch (BadLocationException exc) {
             exc.printStackTrace();
         }
-        
+
     }
-    
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        FlatLightLaf.setup();
+        FlatMacLightLaf.setup();
         java.awt.EventQueue.invokeLater(() -> new JanelaPrincipal().setVisible(true));
     }
 
