@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultListModel;
+import javax.swing.JColorChooser;
 import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
@@ -54,6 +55,7 @@ public class JanelaPrincipal extends javax.swing.JFrame {
         btnBuscar = new javax.swing.JButton();
         scrollPaneResultado = new javax.swing.JScrollPane();
         listResultado = new javax.swing.JList<>();
+        paneCorMarcador = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Busca em Trie");
@@ -70,6 +72,25 @@ public class JanelaPrincipal extends javax.swing.JFrame {
         listResultado.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         scrollPaneResultado.setViewportView(listResultado);
 
+        paneCorMarcador.setBackground(new java.awt.Color(255, 255, 0));
+        paneCorMarcador.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        paneCorMarcador.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                paneCorMarcadorMouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout paneCorMarcadorLayout = new javax.swing.GroupLayout(paneCorMarcador);
+        paneCorMarcador.setLayout(paneCorMarcadorLayout);
+        paneCorMarcadorLayout.setHorizontalGroup(
+            paneCorMarcadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 28, Short.MAX_VALUE)
+        );
+        paneCorMarcadorLayout.setVerticalGroup(
+            paneCorMarcadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout painelPesquisaLayout = new javax.swing.GroupLayout(painelPesquisa);
         painelPesquisa.setLayout(painelPesquisaLayout);
         painelPesquisaLayout.setHorizontalGroup(
@@ -81,10 +102,13 @@ public class JanelaPrincipal extends javax.swing.JFrame {
                     .addGroup(painelPesquisaLayout.createSequentialGroup()
                         .addComponent(lblBuscarPor)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtBuscarPor))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, painelPesquisaLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnBuscar)))
+                        .addGroup(painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(painelPesquisaLayout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(paneCorMarcador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnBuscar))
+                            .addComponent(txtBuscarPor))))
                 .addContainerGap())
         );
         painelPesquisaLayout.setVerticalGroup(
@@ -95,8 +119,10 @@ public class JanelaPrincipal extends javax.swing.JFrame {
                     .addComponent(lblBuscarPor)
                     .addComponent(txtBuscarPor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnBuscar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(paneCorMarcador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
                 .addComponent(scrollPaneResultado)
                 .addContainerGap())
         );
@@ -167,7 +193,7 @@ public class JanelaPrincipal extends javax.swing.JFrame {
                 model.clear();
 
                 grifar(valor, resultado);
-                
+
                 // cria os itens da lista 
                 for (Posicao p : resultado) {
                     String itemLista = String.format(
@@ -183,6 +209,16 @@ public class JanelaPrincipal extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void paneCorMarcadorMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_paneCorMarcadorMouseClicked
+
+        Color c = JColorChooser.showDialog(this, "Cor do Marcador", paneCorMarcador.getBackground());
+
+        if (c != null) {
+            paneCorMarcador.setBackground(c);
+        }
+
+    }//GEN-LAST:event_paneCorMarcadorMouseClicked
 
     private Posicao getPosicao(int offset) {
 
@@ -202,18 +238,18 @@ public class JanelaPrincipal extends javax.swing.JFrame {
         Highlighter h = textPaneTexto.getHighlighter();
         h.removeAllHighlights();
 
-        Highlighter.HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW);
-        
+        Highlighter.HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(paneCorMarcador.getBackground());
+
         try {
             String textoCompleto = textPaneTexto.getText();
             int offsetAtual = 0;
-            
+
             for (Posicao p : posicoes) {
                 int inicio = textoCompleto.indexOf(palavra, offsetAtual);
                 int fim = inicio + palavra.length();
-                
+
                 h.addHighlight(inicio, fim, painter);
-                
+
                 offsetAtual = fim;
             }
         } catch (BadLocationException exc) {
@@ -255,6 +291,7 @@ public class JanelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel lblBuscarPor;
     private javax.swing.JList<String> listResultado;
     private javax.swing.JPanel painelPesquisa;
+    private javax.swing.JPanel paneCorMarcador;
     private javax.swing.JScrollPane scrollPaneResultado;
     private javax.swing.JScrollPane scrollPaneTexto;
     private javax.swing.JTextPane textPaneTexto;
