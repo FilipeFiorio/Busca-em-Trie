@@ -1,17 +1,23 @@
 package buscaemtrie;
 
+import aesd.ds.implementations.nonlinear.symtable.Trie;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Document;
+import javax.swing.text.Element;
+import javax.swing.text.Highlighter;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
 public class JanelaPrincipal extends javax.swing.JFrame {
 
     //private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(JanelaPrincipal.class.getName());
-
     /**
      * Creates new form JanelaPrincipal
      */
@@ -26,7 +32,7 @@ public class JanelaPrincipal extends javax.swing.JFrame {
                 "by sea sells she shells shore the by by shore she she sea ball pen chair",
                 Color.BLACK, false, false
         );
-        
+
         btnBuscar.setBackground(new Color(40, 20, 200, 120));
 
     }
@@ -126,34 +132,94 @@ public class JanelaPrincipal extends javax.swing.JFrame {
         SwingUtilities.invokeLater(() -> {
 
             new Thread(() -> {
-                
-                // como obter o conteúdo de uma caixa de texto:
-                // getText(), retorna o conteúdo do JTextField como String
-                // trim(), remove espaços nas extremidades, retornando uma nova String
-                String valor = txtBuscarPor.getText().trim();
-                System.out.println(valor);
 
-                // cria um item (como String) de exemplo
-                String itemLista = String.format(
-                        "%s: linha %d, coluna %d",
-                        valor,
-                        1,
-                        10
-                );
+                Trie<List<Posicao>> trie = new Trie<>();
+
+                String valor = txtBuscarPor.getText().trim();
+                String textoCompleto = textPaneTexto.getText();
+                String[] textoDividido = textoCompleto.split("\\s+");
+
+                int offsetAtual = 0;
+
+                for (int i = 0; i < textoDividido.length; i++) {
+
+                    String palavra = textoDividido[i];
+
+                    int offset = textoCompleto.indexOf(palavra, offsetAtual);
+
+                    List<Posicao> posicoes = trie.get(palavra);
+                    if (posicoes == null) {
+                        posicoes = new ArrayList<>();
+                    }
+
+                    posicoes.add(getPosicao(offset));
+
+                    trie.put(palavra, posicoes);
+
+                    offsetAtual = offset + palavra.length();
+
+                }
+
+                List<Posicao> resultado = trie.get(valor);
 
                 // obtém o modelo da lista, limpa e adiciona um item
                 DefaultListModel<String> model = (DefaultListModel<String>) listResultado.getModel();
                 model.clear();
-                model.addElement(itemLista);
 
-                // adiciona texto formatado ao JTextPane
-                adicionarTextoFormatado(valor, Color.BLUE, true, true);
+                grifar(valor, resultado);
+                
+                // cria os itens da lista 
+                for (Posicao p : resultado) {
+                    String itemLista = String.format(
+                            "linha %d, coluna %d",
+                            p.linha,
+                            p.coluna
+                    );
+                    model.addElement(itemLista);
+                }
 
             }).start();
         });
 
 
     }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private Posicao getPosicao(int offset) {
+
+        Document documento = textPaneTexto.getDocument();
+        Element raiz = documento.getDefaultRootElement();
+
+        int linha = raiz.getElementIndex(offset);
+        Element linhaElemento = raiz.getElement(linha);
+        int coluna = offset - linhaElemento.getStartOffset();
+
+        return new Posicao(linha + 1, coluna + 1);
+
+    }
+
+    private void grifar(String palavra, List<Posicao> posicoes) {
+
+        Highlighter h = textPaneTexto.getHighlighter();
+        h.removeAllHighlights();
+
+        Highlighter.HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW);
+        
+        try {
+            String textoCompleto = textPaneTexto.getText();
+            int offsetAtual = 0;
+            
+            for (Posicao p : posicoes) {
+                int inicio = textoCompleto.indexOf(palavra, offsetAtual);
+                int fim = inicio + palavra.length();
+                
+                h.addHighlight(inicio, fim, painter);
+                
+                offsetAtual = fim;
+            }
+        } catch (BadLocationException exc) {
+            exc.printStackTrace();
+        }
+    }
 
     private void adicionarTextoFormatado(String texto, Color cor, boolean italico, boolean negrito) {
 
@@ -169,6 +235,10 @@ public class JanelaPrincipal extends javax.swing.JFrame {
         } catch (BadLocationException exc) {
             exc.printStackTrace();
         }
+
+    }
+
+    private record Posicao(int linha, int coluna) {
 
     }
 
