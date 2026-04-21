@@ -13,8 +13,6 @@ import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.Highlighter;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
 
 public class JanelaPrincipal extends javax.swing.JFrame {
 
@@ -29,13 +27,9 @@ public class JanelaPrincipal extends javax.swing.JFrame {
         listResultado.setModel(new DefaultListModel<String>());
 
         textPaneTexto.setText("");
-        adicionarTextoFormatado(
-                "by sea sells she shells shore the by by shore she she sea ball pen chair",
-                Color.BLACK, false, false
-        );
+        textPaneTexto.setText("by sea sells she shells shore the by by shore she she sea ball pen chair");
 
         btnBuscar.setBackground(new Color(40, 20, 200, 120));
-
     }
 
     /**
@@ -98,7 +92,7 @@ public class JanelaPrincipal extends javax.swing.JFrame {
             .addGroup(painelPesquisaLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scrollPaneResultado)
+                    .addComponent(scrollPaneResultado, javax.swing.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
                     .addGroup(painelPesquisaLayout.createSequentialGroup()
                         .addComponent(lblBuscarPor)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -120,7 +114,7 @@ public class JanelaPrincipal extends javax.swing.JFrame {
                     .addComponent(txtBuscarPor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnBuscar)
                     .addComponent(paneCorMarcador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addComponent(scrollPaneResultado)
@@ -133,7 +127,7 @@ public class JanelaPrincipal extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(scrollPaneTexto, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
+                .addComponent(scrollPaneTexto, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(painelPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -162,6 +156,11 @@ public class JanelaPrincipal extends javax.swing.JFrame {
                 Trie<List<Posicao>> trie = new Trie<>();
 
                 String valor = txtBuscarPor.getText().trim();
+
+                if (valor.isEmpty()) {
+                    return;
+                }
+
                 String textoCompleto = textPaneTexto.getText();
                 String[] textoDividido = textoCompleto.split("\\s+");
 
@@ -187,6 +186,10 @@ public class JanelaPrincipal extends javax.swing.JFrame {
                 }
 
                 List<Posicao> resultado = trie.get(valor);
+
+                if (resultado.isEmpty()) {
+                    return;
+                }
 
                 // obtém o modelo da lista, limpa e adiciona um item
                 DefaultListModel<String> model = (DefaultListModel<String>) listResultado.getModel();
@@ -255,23 +258,6 @@ public class JanelaPrincipal extends javax.swing.JFrame {
         } catch (BadLocationException exc) {
             exc.printStackTrace();
         }
-    }
-
-    private void adicionarTextoFormatado(String texto, Color cor, boolean italico, boolean negrito) {
-
-        try {
-
-            SimpleAttributeSet as = new SimpleAttributeSet();
-            StyleConstants.setForeground(as, cor);
-            StyleConstants.setBold(as, negrito);
-            StyleConstants.setItalic(as, italico);
-
-            textPaneTexto.getDocument().insertString(textPaneTexto.getDocument().getLength(), texto, as);
-
-        } catch (BadLocationException exc) {
-            exc.printStackTrace();
-        }
-
     }
 
     private record Posicao(int linha, int coluna) {
