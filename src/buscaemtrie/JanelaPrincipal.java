@@ -1,6 +1,7 @@
 package buscaemtrie;
 
 import aesd.ds.implementations.nonlinear.symtable.Trie;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -15,8 +16,9 @@ import javax.swing.text.Element;
 import javax.swing.text.Highlighter;
 
 public class JanelaPrincipal extends javax.swing.JFrame {
+    
+    private boolean temaDark = false;
 
-    //private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(JanelaPrincipal.class.getName());
     /**
      * Creates new form JanelaPrincipal
      */
@@ -30,6 +32,8 @@ public class JanelaPrincipal extends javax.swing.JFrame {
         textPaneTexto.setText("by sea sells she shells shore the by by shore she she sea ball pen chair");
 
         btnBuscar.setBackground(new Color(40, 20, 200, 120));
+        botaoTema.setBackground(new Color(40, 20, 200, 120));
+        
     }
 
     /**
@@ -50,6 +54,7 @@ public class JanelaPrincipal extends javax.swing.JFrame {
         scrollPaneResultado = new javax.swing.JScrollPane();
         listResultado = new javax.swing.JList<>();
         paneCorMarcador = new javax.swing.JPanel();
+        botaoTema = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Busca em Trie");
@@ -85,6 +90,9 @@ public class JanelaPrincipal extends javax.swing.JFrame {
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
+        botaoTema.setText("Tema Dark");
+        botaoTema.addActionListener(this::botaoTemaActionPerformed);
+
         javax.swing.GroupLayout painelPesquisaLayout = new javax.swing.GroupLayout(painelPesquisa);
         painelPesquisa.setLayout(painelPesquisaLayout);
         painelPesquisaLayout.setHorizontalGroup(
@@ -96,13 +104,13 @@ public class JanelaPrincipal extends javax.swing.JFrame {
                     .addGroup(painelPesquisaLayout.createSequentialGroup()
                         .addComponent(lblBuscarPor)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(painelPesquisaLayout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(paneCorMarcador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnBuscar))
-                            .addComponent(txtBuscarPor))))
+                        .addComponent(txtBuscarPor))
+                    .addGroup(painelPesquisaLayout.createSequentialGroup()
+                        .addComponent(botaoTema)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(paneCorMarcador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnBuscar)))
                 .addContainerGap())
         );
         painelPesquisaLayout.setVerticalGroup(
@@ -113,9 +121,11 @@ public class JanelaPrincipal extends javax.swing.JFrame {
                     .addComponent(lblBuscarPor)
                     .addComponent(txtBuscarPor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnBuscar)
-                    .addComponent(paneCorMarcador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(btnBuscar)
+                        .addComponent(paneCorMarcador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(botaoTema))
                 .addGap(18, 18, 18)
                 .addComponent(scrollPaneResultado)
                 .addContainerGap())
@@ -223,6 +233,28 @@ public class JanelaPrincipal extends javax.swing.JFrame {
 
     }//GEN-LAST:event_paneCorMarcadorMouseClicked
 
+    private void botaoTemaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoTemaActionPerformed
+        
+        try {
+            if(temaDark) {
+                FlatMacLightLaf.setup();
+                botaoTema.setText("Tema Dark");
+            } else {
+                FlatMacDarkLaf.setup();
+                botaoTema.setText("Tema Light");
+            }
+            
+            temaDark = !temaDark;
+            
+            SwingUtilities.updateComponentTreeUI(this);
+
+            
+        } catch(Exception exc) {
+            exc.printStackTrace();
+        }
+        
+    }//GEN-LAST:event_botaoTemaActionPerformed
+
     private Posicao getPosicao(int offset) {
 
         Document documento = textPaneTexto.getDocument();
@@ -259,7 +291,7 @@ public class JanelaPrincipal extends javax.swing.JFrame {
             exc.printStackTrace();
         }
     }
-
+    
     private record Posicao(int linha, int coluna) {
 
     }
@@ -273,6 +305,7 @@ public class JanelaPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton botaoTema;
     private javax.swing.JButton btnBuscar;
     private javax.swing.JLabel lblBuscarPor;
     private javax.swing.JList<String> listResultado;
